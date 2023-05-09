@@ -1,7 +1,4 @@
-﻿using OpenTK.Windowing.Common;
-using OpenTK.Windowing.GraphicsLibraryFramework;
-
-namespace Rabbit_Sandbox
+﻿namespace Rabbit_Sandbox
 {
     internal class Program
     {
