@@ -1,0 +1,8 @@
+/.vs/
+/bin/
+/obj/
+/Rabbit-core/bin/Debug/net7.0
+/Rabbit-core/obj
+/Rabbit-Editor/obj
+/Rabbit-Sandbox/bin/Debug/net7.0
+/Rabbit-Sandbox/obj
