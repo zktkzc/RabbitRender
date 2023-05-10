@@ -12,7 +12,7 @@ namespace Rabbit_Sandbox
         private VertexArrayObject _vao;
         private VertexBufferObject _vbo;
         private IndexBufferObject _ibo;
-        private int _program;
+        private Shader _shader;
 
         float[] _vertices =
         {
@@ -50,38 +50,7 @@ namespace Rabbit_Sandbox
 
             _vao = new VertexArrayObject(_ibo, _vbo);
 
-            string vertexSource = @"#version 460 core
-                layout (location = 0) in vec3 aPos;
-                layout (location = 1) in vec3 aColor;
-                layout (location = 0) out vec3 color;
-
-                void main()
-                {
-                    gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
-                    color = aColor;
-                }";
-
-            int vertexShader = GL.CreateShader(ShaderType.VertexShader); // 创建顶点着色器
-            GL.ShaderSource(vertexShader, vertexSource);
-            GL.CompileShader(vertexShader); // 编译顶点着色器
-
-            string fragmentSource = @"#version 330 core
-                out vec4 FragColor;
-                layout (location = 0) in vec3 color;
-
-                void main()
-                {
-                    FragColor = vec4(color, 1.0f);
-                }";
-            int fragmentShader = GL.CreateShader(ShaderType.FragmentShader); // 创建片段着色器
-            GL.ShaderSource(fragmentShader, fragmentSource);
-            GL.CompileShader(fragmentShader); // 编译片段着色器
-
-            _program = GL.CreateProgram();
-            GL.AttachShader(_program, vertexShader);
-            GL.AttachShader(_program, fragmentShader);
-            GL.LinkProgram(_program);
-            // GL.UseProgram(_program);
+            _shader = new Shader("""E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl""");
         }
 
         // 每帧进行更新
@@ -90,7 +59,7 @@ namespace Rabbit_Sandbox
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.ClearColor(new Color4(0.2f, 0.3f, 0.3f, 1.0f));
             _vao.Bind();
-            GL.UseProgram(_program);
+            _shader.Bind();
             if (_vao.IndexBufferObject == null)
             {
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
