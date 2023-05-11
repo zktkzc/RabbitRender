@@ -16,10 +16,10 @@ namespace Rabbit_Sandbox
 
         float[] _vertices =
         {
-             0.5f,  0.5f, 0.0f, 1, 0, 0, // 右上角
-             0.5f, -0.5f, 0.0f, 0, 1, 0, // 右下角
-            -0.5f, -0.5f, 0.0f, 0, 0, 1, // 左下角
-            -0.5f,  0.5f, 0.0f, 1, 0, 1  // 左上角
+             0.5f,  0.5f, 0.0f, // 右上角
+             0.5f, -0.5f, 0.0f, // 右下角
+            -0.5f, -0.5f, 0.0f, // 左下角
+            -0.5f,  0.5f, 0.0f  // 左上角
         };
 
         uint[] _indices =
@@ -42,7 +42,7 @@ namespace Rabbit_Sandbox
 
             _vbo = new VertexBufferObject(_vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3), new VertexBufferLayoutElement(1, 3));
+            layout.AddElement(new VertexBufferLayoutElement(0, 3));
             _vbo.AddLayout(layout);
 
             // 创建索引缓冲对象
@@ -53,6 +53,8 @@ namespace Rabbit_Sandbox
             _shader = new Shader("""E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl""");
         }
 
+        private double _totalTime;
+
         // 每帧进行更新
         protected override void OnRenderFrame(FrameEventArgs args)
         {
@@ -60,6 +62,7 @@ namespace Rabbit_Sandbox
             GL.ClearColor(new Color4(0.2f, 0.3f, 0.3f, 1.0f));
             _vao.Bind();
             _shader.Bind();
+            _shader.SetUniform("color", new Vector3(MathF.Sin((float)_totalTime), MathF.Cos((float)_totalTime), MathF.Atan((float)_totalTime)));
             if (_vao.IndexBufferObject == null)
             {
                 GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
@@ -69,6 +72,7 @@ namespace Rabbit_Sandbox
                 GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
             }
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            _totalTime += args.Time; // args.Time是每帧运行的时间
             SwapBuffers();
         }
 

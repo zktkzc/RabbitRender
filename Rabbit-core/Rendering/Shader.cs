@@ -1,4 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
+using Vector2 = OpenTK.Mathematics.Vector2;
+using Vector3 = OpenTK.Mathematics.Vector3;
+using Vector4 = OpenTK.Mathematics.Vector4;
 
 namespace Rabbit_core.Rendering
 {
@@ -6,6 +10,7 @@ namespace Rabbit_core.Rendering
     {
         public int Id { get; private set; }
         public string? Path { get; }
+        private Dictionary<string, int> _cache = new Dictionary<string, int>();
 
         public Shader(string path)
         {
@@ -60,6 +65,27 @@ namespace Rabbit_core.Rendering
             GL.UseProgram(0);
         }
 
+        public void SetUniform(string name, float v) => GL.Uniform1(GetUniformLocation(name), v);
+        public void SetUniform(string name, Vector2 v) => GL.Uniform2(GetUniformLocation(name), v);
+        public void SetUniform(string name, Vector3 v) => GL.Uniform3(GetUniformLocation(name), v);
+        public void SetUniform(string name, Vector4 v) => GL.Uniform4(GetUniformLocation(name), v);
+        public void SetUniform(string name, Matrix2x3 v) => GL.UniformMatrix2x3(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix2x4 v) => GL.UniformMatrix2x4(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix3x4 v) => GL.UniformMatrix3x4(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix2 v) => GL.UniformMatrix2(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix3 v) => GL.UniformMatrix3(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix4 v) => GL.UniformMatrix4(GetUniformLocation(name), true, ref v);
+
+        // TODO 查询所有激活的uniform，这样就可以在材质中对它赋值
+
+        private int GetUniformLocation(string name)
+        {
+            if (_cache.ContainsKey(name)) return _cache[name];
+            int location = GL.GetUniformLocation(Id, name);
+            _cache.Add(name, location);
+            return location;
+        }
+
         private int CreateShader(ShaderType type, string source)
         {
             int id = GL.CreateShader(type);
@@ -69,7 +95,8 @@ namespace Rabbit_core.Rendering
             if (success == 0)
             {
                 GL.GetShaderInfoLog(id, out string info); // 获取报错信息
-                Console.WriteLine(info);
+
+                Console.WriteLine($"error: {type.ToString()}\n{info}");
             }
 
             return id;
