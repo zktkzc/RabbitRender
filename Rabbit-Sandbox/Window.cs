@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using OpenTK.Mathematics;
 using Rabbit_core.Rendering;
 
 namespace Rabbit_Sandbox
@@ -13,13 +13,16 @@ namespace Rabbit_Sandbox
         private VertexBufferObject _vbo;
         private IndexBufferObject _ibo;
         private Shader _shader;
+        private Texture2D _texture01;
+        private Texture2D _texture02;
 
         float[] _vertices =
         {
-             0.5f,  0.5f, 0.0f, // 右上角
-             0.5f, -0.5f, 0.0f, // 右下角
-            -0.5f, -0.5f, 0.0f, // 左下角
-            -0.5f,  0.5f, 0.0f  // 左上角
+             // positions          // colors        // texture coords
+             0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f, // 右上角
+             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // 右下角
+            -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, // 左下角
+            -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f  // 左上角
         };
 
         uint[] _indices =
@@ -42,7 +45,11 @@ namespace Rabbit_Sandbox
 
             _vbo = new VertexBufferObject(_vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(new VertexBufferLayoutElement(0, 3));
+            layout.AddElement(
+                new VertexBufferLayoutElement(0, 3),
+                new VertexBufferLayoutElement(1, 3),
+                new VertexBufferLayoutElement(2, 2)
+                );
             _vbo.AddLayout(layout);
 
             // 创建索引缓冲对象
@@ -51,6 +58,10 @@ namespace Rabbit_Sandbox
             _vao = new VertexArrayObject(_ibo, _vbo);
 
             _shader = new Shader("""E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl""");
+
+            _texture01 = new Texture2D(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-5wwwr7.jpg");
+            //_texture02 = new Texture2D(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-6kyejq.jpg");
+            _texture02 = new Texture2D(Color4.Red);
         }
 
         private double _totalTime;
@@ -63,14 +74,11 @@ namespace Rabbit_Sandbox
             _vao.Bind();
             _shader.Bind();
             _shader.SetUniform("color", new Vector3(MathF.Sin((float)_totalTime), MathF.Cos((float)_totalTime), MathF.Atan((float)_totalTime)));
-            if (_vao.IndexBufferObject == null)
-            {
-                GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            }
-            else
-            {
-                GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
-            }
+            _shader.SetUniform("mainTex", 0);
+            _texture01.Bind(0);
+            _shader.SetUniform("subTex", 1);
+            _texture02.Bind(1);
+            GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
             //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
             _totalTime += args.Time; // args.Time是每帧运行的时间
             SwapBuffers();
@@ -79,7 +87,7 @@ namespace Rabbit_Sandbox
         // 固定时间进行更新
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            Console.WriteLine(e.Time);
+            // Console.WriteLine(e.Time);
             KeyboardState input = KeyboardState;
 
             if (input.IsKeyDown(Keys.Escape))
