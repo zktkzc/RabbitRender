@@ -70,12 +70,12 @@ namespace Rabbit_core.Rendering
         public void SetUniform(string name, Vector2 v) => GL.Uniform2(GetUniformLocation(name), v);
         public void SetUniform(string name, Vector3 v) => GL.Uniform3(GetUniformLocation(name), v);
         public void SetUniform(string name, Vector4 v) => GL.Uniform4(GetUniformLocation(name), v);
-        public void SetUniform(string name, Matrix2x3 v) => GL.UniformMatrix2x3(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix2x4 v) => GL.UniformMatrix2x4(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix3x4 v) => GL.UniformMatrix3x4(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix2 v) => GL.UniformMatrix2(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix3 v) => GL.UniformMatrix3(GetUniformLocation(name), true, ref v);
-        public void SetUniform(string name, Matrix4 v) => GL.UniformMatrix4(GetUniformLocation(name), true, ref v);
+        public void SetUniform(string name, Matrix2x3 v) => GL.UniformMatrix2x3(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix2x4 v) => GL.UniformMatrix2x4(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix3x4 v) => GL.UniformMatrix3x4(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix2 v) => GL.UniformMatrix2(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix3 v) => GL.UniformMatrix3(GetUniformLocation(name), false, ref v);
+        public void SetUniform(string name, Matrix4 v) => GL.UniformMatrix4(GetUniformLocation(name), false, ref v);
 
         // TODO 查询所有激活的uniform，这样就可以在材质中对它赋值
 

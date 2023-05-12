@@ -9,20 +9,57 @@ namespace Rabbit_Sandbox
 {
     internal class Window : GameWindow
     {
+        private float width;
+        private float height;
         private VertexArrayObject _vao;
         private VertexBufferObject _vbo;
         private IndexBufferObject _ibo;
         private Shader _shader;
         private Texture2D _texture01;
-        private Texture2D _texture02;
 
         float[] _vertices =
         {
-             // positions          // colors        // texture coords
-             0.5f,  0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  1.0f, 1.0f, // 右上角
-             0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  1.0f, 0.0f, // 右下角
-            -0.5f, -0.5f, 0.0f,  0.0f, 0.0f, 1.0f,  0.0f, 0.0f, // 左下角
-            -0.5f,  0.5f, 0.0f,  1.0f, 1.0f, 1.0f,  0.0f, 1.0f  // 左上角
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
+
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+
+            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
+
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
+            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
+            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
+            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
         };
 
         uint[] _indices =
@@ -32,10 +69,11 @@ namespace Rabbit_Sandbox
             // 这样可以由下表代表顶点组合成矩形
 
             0, 1, 3, // 第一个三角形
-            1, 2, 3  // 第二个三角形
+            1, 2, 3 // 第二个三角形
         };
 
-        public Window(int width, int height, string title) : base(GameWindowSettings.Default, new NativeWindowSettings() { Size = (width, height), Title = title })
+        public Window(int width, int height, string title) : base(GameWindowSettings.Default,
+            new NativeWindowSettings() { Size = (width, height), Title = title })
         {
         }
 
@@ -46,40 +84,55 @@ namespace Rabbit_Sandbox
             _vbo = new VertexBufferObject(_vertices);
             VertexBufferLayout layout = new VertexBufferLayout();
             layout.AddElement(
-                new VertexBufferLayoutElement(0, 3),
-                new VertexBufferLayoutElement(1, 3),
-                new VertexBufferLayoutElement(2, 2)
-                );
+                new VertexBufferLayoutElement(0, 3), // 顶点数据
+                new VertexBufferLayoutElement(1, 2) // 纹理坐标
+            );
             _vbo.AddLayout(layout);
 
             // 创建索引缓冲对象
             _ibo = new IndexBufferObject(_indices);
 
-            _vao = new VertexArrayObject(_ibo, _vbo);
+            _vao = new VertexArrayObject(null, _vbo);
 
             _shader = new Shader("""E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl""");
 
             _texture01 = new Texture2D(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-5wwwr7.jpg");
-            //_texture02 = new Texture2D(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-6kyejq.jpg");
-            _texture02 = new Texture2D(Color4.Red);
         }
 
         private double _totalTime;
+        private Matrix4 _model;
+        private Matrix4 _view;
+        private Matrix4 _perspective;
 
         // 每帧进行更新
         protected override void OnRenderFrame(FrameEventArgs args)
         {
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(new Color4(0.2f, 0.3f, 0.3f, 1.0f));
+
             _vao.Bind();
             _shader.Bind();
-            _shader.SetUniform("color", new Vector3(MathF.Sin((float)_totalTime), MathF.Cos((float)_totalTime), MathF.Atan((float)_totalTime)));
+
+            _model = Matrix4.CreateScale(0.5f, 0.5f, 0.5f) * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(30)) *
+                     Matrix4.CreateTranslation(-1, 0, 0);
+            _view = Matrix4.LookAt(new Vector3(0, 0, -3), Vector3.Zero, Vector3.UnitY);
+            _perspective = Matrix4.CreatePerspectiveFieldOfView(
+                MathHelper.DegreesToRadians(45),
+                width / height,
+                0.1f,
+                1000f
+            );
+
             _shader.SetUniform("mainTex", 0);
-            _texture01.Bind(0);
-            _shader.SetUniform("subTex", 1);
-            _texture02.Bind(1);
-            GL.DrawElements(PrimitiveType.Triangles, _ibo.Length, DrawElementsType.UnsignedInt, 0);
-            //GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
+            _texture01.Bind();
+
+            _shader.SetUniform("model", _model);
+            _shader.SetUniform("view", _view);
+            _shader.SetUniform("perspective", _perspective);
+
+            GL.Enable(EnableCap.DepthTest); // 开启深度测试
+            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+
             _totalTime += args.Time; // args.Time是每帧运行的时间
             SwapBuffers();
         }
@@ -99,6 +152,8 @@ namespace Rabbit_Sandbox
         protected override void OnResize(ResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
+            width = e.Width;
+            height = e.Height;
         }
     }
 }
