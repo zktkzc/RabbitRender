@@ -7,16 +7,18 @@ public class Mesh : IDisposable
     public int VertexCount { get; }
     public int IndexCount { get; }
     public int MaterialIndex { get; }
+    public string MeshName { get; }
 
     private IndexBufferObject? _indexBufferObject;
     private VertexBufferObject _vertexBufferObject;
     private VertexArrayObject _vertexArrayObject;
 
-    public Mesh(List<Vertex> vertices, List<uint> indices, int materialIndex)
+    public Mesh(List<Vertex> vertices, List<uint> indices, int materialIndex, string meshName)
     {
         VertexCount = vertices.Count;
         IndexCount = indices.Count;
         MaterialIndex = materialIndex;
+        MeshName = meshName;
         
         CreateBuffer(vertices, indices);
     }

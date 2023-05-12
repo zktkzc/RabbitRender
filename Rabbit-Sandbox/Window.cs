@@ -11,66 +11,10 @@ namespace Rabbit_Sandbox
     {
         private float width;
         private float height;
-        private VertexArrayObject _vao;
-        private VertexBufferObject _vbo;
-        private IndexBufferObject _ibo;
+
         private Shader _shader;
         private Texture2D _texture01;
-
-        float[] _vertices =
-        {
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 0.0f,
-
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 1.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-
-            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, -0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, -0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, -0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, -0.5f, -0.5f, 0.0f, 1.0f,
-
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f,
-            0.5f, 0.5f, -0.5f, 1.0f, 1.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            0.5f, 0.5f, 0.5f, 1.0f, 0.0f,
-            -0.5f, 0.5f, 0.5f, 0.0f, 0.0f,
-            -0.5f, 0.5f, -0.5f, 0.0f, 1.0f
-        };
-
-        uint[] _indices =
-        {
-            // 注意索引从0开始
-            // 此例的索引（0，1，2，3）就是顶点数组_vertices的下标
-            // 这样可以由下表代表顶点组合成矩形
-
-            0, 1, 3, // 第一个三角形
-            1, 2, 3 // 第二个三角形
-        };
+        private Model _myModel;
 
         public Window(int width, int height, string title) : base(GameWindowSettings.Default,
             new NativeWindowSettings() { Size = (width, height), Title = title })
@@ -79,23 +23,8 @@ namespace Rabbit_Sandbox
 
         protected override void OnLoad()
         {
-            //GL.PolygonMode(MaterialFace.FrontAndBack, PolygonMode.Line); // 绘制线框
-
-            _vbo = new VertexBufferObject(_vertices);
-            VertexBufferLayout layout = new VertexBufferLayout();
-            layout.AddElement(
-                new VertexBufferLayoutElement(0, 3), // 顶点数据
-                new VertexBufferLayoutElement(1, 2) // 纹理坐标
-            );
-            _vbo.AddLayout(layout);
-
-            // 创建索引缓冲对象
-            _ibo = new IndexBufferObject(_indices);
-
-            _vao = new VertexArrayObject(null, _vbo);
-
+            _myModel = new Model(@"C:\Users\tkzc\Desktop\5.fbx");
             _shader = new Shader("""E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl""");
-
             _texture01 = new Texture2D(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-5wwwr7.jpg");
         }
 
@@ -110,11 +39,9 @@ namespace Rabbit_Sandbox
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(new Color4(0.2f, 0.3f, 0.3f, 1.0f));
 
-            _vao.Bind();
             _shader.Bind();
 
-            _model = Matrix4.CreateScale(0.5f, 0.5f, 0.5f) * Matrix4.CreateRotationX(MathHelper.DegreesToRadians(30)) *
-                     Matrix4.CreateTranslation(-1, 0, 0);
+            _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totalTime * 10))) * Matrix4.CreateRotationX(MathHelper.DegreesToRadians((float)(_totalTime * 10)));
             _view = Matrix4.LookAt(new Vector3(0, 0, -3), Vector3.Zero, Vector3.UnitY);
             _perspective = Matrix4.CreatePerspectiveFieldOfView(
                 MathHelper.DegreesToRadians(45),
@@ -130,8 +57,19 @@ namespace Rabbit_Sandbox
             _shader.SetUniform("view", _view);
             _shader.SetUniform("perspective", _perspective);
 
-            GL.Enable(EnableCap.DepthTest); // 开启深度测试
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 36);
+            foreach (var mesh in _myModel.Meshes)
+            {
+                mesh.Bind();
+                GL.Enable(EnableCap.DepthTest);
+                if (mesh.IndexCount > 3)
+                {
+                    GL.DrawElements(PrimitiveType.Triangles, mesh.IndexCount, DrawElementsType.UnsignedInt, 0);
+                }
+                else
+                {
+                    GL.DrawArrays(PrimitiveType.Triangles, 0, mesh.VertexCount);
+                }
+            }
 
             _totalTime += args.Time; // args.Time是每帧运行的时间
             SwapBuffers();
