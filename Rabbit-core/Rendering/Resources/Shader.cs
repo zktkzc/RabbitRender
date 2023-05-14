@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 using System.IO;
+using Rabbit_core.Log;
 using Vector2 = OpenTK.Mathematics.Vector2;
 using Vector3 = OpenTK.Mathematics.Vector3;
 using Vector4 = OpenTK.Mathematics.Vector4;
@@ -41,7 +42,20 @@ namespace Rabbit_core.Rendering.Resources
             QueryUniforms();
         }
 
-        public static Shader Create(string path) => new Shader(path);
+        public static Shader? Create(string path)
+        {
+            Shader? shader = null;
+            try
+            {
+                shader = new Shader(path);
+            }
+            catch (Exception e)
+            {
+                RaLog.ErrorLogCore(e.Message);
+            }
+
+            return shader;
+        }
 
         public static Shader Create(string vertexShaderSource, string fragmentShaderSource) =>
             new Shader(vertexShaderSource, fragmentShaderSource);
@@ -59,7 +73,7 @@ namespace Rabbit_core.Rendering.Resources
             if (success == 0)
             {
                 GL.GetShaderInfoLog(Id, out string info);
-                Console.WriteLine(info);
+                RaLog.ErrorLogCore(info);
             }
 
             GL.DeleteShader(vertexShader);
@@ -217,7 +231,7 @@ namespace Rabbit_core.Rendering.Resources
             {
                 GL.GetShaderInfoLog(id, out string info); // 获取报错信息
 
-                Console.WriteLine($"error: {type.ToString()}\n{info}");
+                RaLog.ErrorLogCore($"{type.ToString()}: {info}");
             }
 
             return id;

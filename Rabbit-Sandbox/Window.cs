@@ -12,9 +12,9 @@ namespace Rabbit_Sandbox
         private float width;
         private float height;
 
-        private Shader _shader;
-        private Texture2D _texture01;
-        private Model _myModel;
+        private Shader? _shader;
+        private Texture2D? _texture01;
+        private Model? _myModel;
 
         public Window(int width, int height, string title) : base(GameWindowSettings.Default,
             new NativeWindowSettings() { Size = (width, height), Title = title })

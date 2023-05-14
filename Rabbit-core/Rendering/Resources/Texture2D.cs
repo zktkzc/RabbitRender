@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
+using Rabbit_core.Log;
 using StbImageSharp;
 
 namespace Rabbit_core.Rendering.Resources
@@ -94,13 +95,25 @@ namespace Rabbit_core.Rendering.Resources
             );
         }
 
-        public static Texture2D Create(string path,
+        public static Texture2D? Create(string path,
             TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
             TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
             TextureMagFilter magFilter = TextureMagFilter.Linear,
             TextureMinFilter minFilter = TextureMinFilter.Nearest,
             bool isMinmap = false
-        ) => new Texture2D(path, wrapModeS, wrapModeT, magFilter, minFilter, isMinmap);
+        )
+        {
+            Texture2D? texture = null;
+            try
+            {
+                texture = new Texture2D(path, wrapModeS, wrapModeT, magFilter, minFilter, isMinmap);
+            }
+            catch (Exception e)
+            {
+                RaLog.ErrorLogCore(e.Message);
+            }
+            return texture;
+        }
 
         public static Texture2D Create(Color4 color) => new Texture2D(color);
 
@@ -117,18 +130,10 @@ namespace Rabbit_core.Rendering.Resources
 
         private ImageResult? LoadTexture2DFromDisk(string path)
         {
-            try
-            {
-                // 对图片进行上下翻转
-                StbImage.stbi_set_flip_vertically_on_load(1);
-                // 加载图片
-                return ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-                return null;
-            }
+            // 对图片进行上下翻转
+            StbImage.stbi_set_flip_vertically_on_load(1);
+            // 加载图片
+            return ImageResult.FromStream(File.OpenRead(path), ColorComponents.RedGreenBlueAlpha);
         }
 
         private void ReleaseUnmanagedResources()

@@ -1,4 +1,5 @@
 ﻿using Assimp;
+using Rabbit_core.Log;
 using Rabbit_core.Rendering.Geometry;
 
 namespace Rabbit_core.Rendering.Resources
@@ -16,7 +17,19 @@ namespace Rabbit_core.Rendering.Resources
             (Meshes, MaterialNames) = LoadModel(path);
         }
 
-        public static Model Create(string path) => new Model(path);
+        public static Model? Create(string path)
+        {
+            Model? model = null;
+            try
+            {
+                model = new Model(path);
+            }
+            catch (Exception e)
+            {
+                RaLog.ErrorLogCore(e.Message);
+            }
+            return model;
+        }
 
         // 加载模型
         public static (List<Mesh> meshes, List<string> materialNames) LoadModel(string path,
