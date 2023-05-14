@@ -2,7 +2,7 @@
 using OpenTK.Mathematics;
 using StbImageSharp;
 
-namespace Rabbit_core.Rendering
+namespace Rabbit_core.Rendering.Resources
 {
     public class Texture2D : IDisposable
     {
@@ -13,14 +13,15 @@ namespace Rabbit_core.Rendering
         public TextureMagFilter TextureMagFilter { get; set; }
         public TextureMinFilter TextureMinFilter { get; set; }
         public bool IsMinmap { get; set; }
+        public bool IsDestory { get; private set; } = false;
 
-        public Texture2D(
+        private Texture2D(
             string path,
-            TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
-            TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
-            TextureMagFilter magFilter = TextureMagFilter.Linear,
-            TextureMinFilter minFilter = TextureMinFilter.Nearest,
-            bool isMinmap = false
+            TextureWrapMode wrapModeS,
+            TextureWrapMode wrapModeT,
+            TextureMagFilter magFilter,
+            TextureMinFilter minFilter,
+            bool isMinmap
             )
         {
             ImageResult? image = LoadTexture2DFromDisk(path);
@@ -62,25 +63,19 @@ namespace Rabbit_core.Rendering
             GL.BindTexture(TextureTarget.Texture2D, 0);
         }
 
-        public Texture2D(
-            Color4 color,
-            TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
-            TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
-            TextureMagFilter magFilter = TextureMagFilter.Linear,
-            TextureMinFilter minFilter = TextureMinFilter.Nearest
-            )
+        private Texture2D(Color4 color)
         {
             Id = GL.GenTexture();
             GL.ActiveTexture(TextureUnit.Texture0);
             GL.BindTexture(TextureTarget.Texture2D, Id);
-            WrapModeS = wrapModeS;
-            WrapModeT = wrapModeT;
-            TextureMagFilter = magFilter;
-            TextureMinFilter = minFilter;
-            int ws = (int)wrapModeS;
-            int wt = (int)wrapModeT;
-            int magF = (int)magFilter;
-            int minF = (int)minFilter;
+            WrapModeS = TextureWrapMode.Repeat;
+            WrapModeT = TextureWrapMode.Repeat;
+            TextureMagFilter = TextureMagFilter.Linear;
+            TextureMinFilter = TextureMinFilter.Nearest;
+            int ws = (int)WrapModeS;
+            int wt = (int)WrapModeT;
+            int magF = (int)TextureMagFilter;
+            int minF = (int)TextureMinFilter;
             GL.TextureParameterI(Id, TextureParameterName.TextureWrapS, ref ws);
             GL.TextureParameterI(Id, TextureParameterName.TextureWrapT, ref wt);
             GL.TextureParameterI(Id, TextureParameterName.TextureMagFilter, ref magF);
@@ -98,6 +93,16 @@ namespace Rabbit_core.Rendering
                 new[] { color.R, color.G, color.B, color.A }
             );
         }
+
+        public static Texture2D Create(string path,
+            TextureWrapMode wrapModeS = TextureWrapMode.Repeat,
+            TextureWrapMode wrapModeT = TextureWrapMode.Repeat,
+            TextureMagFilter magFilter = TextureMagFilter.Linear,
+            TextureMinFilter minFilter = TextureMinFilter.Nearest,
+            bool isMinmap = false
+        ) => new Texture2D(path, wrapModeS, wrapModeT, magFilter, minFilter, isMinmap);
+
+        public static Texture2D Create(Color4 color) => new Texture2D(color);
 
         public void Bind(int slot = 0)
         {
@@ -133,8 +138,12 @@ namespace Rabbit_core.Rendering
 
         public void Dispose()
         {
-            ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
+            if (!IsDestory)
+            {
+                ReleaseUnmanagedResources();
+                GC.SuppressFinalize(this);
+                IsDestory = true;
+            }
         }
 
         ~Texture2D()

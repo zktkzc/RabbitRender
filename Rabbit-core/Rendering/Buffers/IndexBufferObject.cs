@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL4;
 
-namespace Rabbit_core.Rendering
+namespace Rabbit_core.Rendering.Buffers
 {
     public class IndexBufferObject : IDisposable
     {

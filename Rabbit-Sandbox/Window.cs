@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Rabbit_core.Rendering;
+using Rabbit_core.Rendering.Resources;
 
 namespace Rabbit_Sandbox
 {
@@ -23,9 +23,9 @@ namespace Rabbit_Sandbox
 
         protected override void OnLoad()
         {
-            _myModel = new Model(@"C:\Users\tkzc\Desktop\5.fbx");
-            _shader = new Shader("""E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl""");
-            _texture01 = new Texture2D(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-5wwwr7.jpg");
+            _myModel = Model.Create(@"C:\Users\tkzc\Desktop\5.fbx");
+            _shader = Shader.Create(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl");
+            _texture01 = Texture2D.Create(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-5wwwr7.jpg");
         }
 
         private double _totalTime;
