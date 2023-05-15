@@ -10,8 +10,8 @@ namespace Rabbit_Sandbox
 {
     internal class Window : GameWindow
     {
-        private float width;
-        private float height;
+        private float _width;
+        private float _height;
 
         private Shader? _shader;
         private Texture2D? _texture01;
@@ -51,7 +51,7 @@ namespace Rabbit_Sandbox
             _view = Matrix4.LookAt(new Vector3(0, 0, -10), Vector3.Zero, Vector3.UnitY);
             _perspective = Matrix4.CreatePerspectiveFieldOfView(
                 MathHelper.DegreesToRadians(45),
-                width / height,
+                _width / _height,
                 0.1f,
                 1000f
             );
@@ -96,8 +96,8 @@ namespace Rabbit_Sandbox
         protected override void OnResize(ResizeEventArgs e)
         {
             GL.Viewport(0, 0, e.Width, e.Height);
-            width = e.Width;
-            height = e.Height;
+            _width = e.Width;
+            _height = e.Height;
         }
     }
 }

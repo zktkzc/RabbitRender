@@ -1,10 +1,10 @@
 ﻿namespace Rabbit_core.ECS.Components;
 
-public class CIdComponent : IComponent
+public class CId : IComponent
 {
     public Guid Id { get; }
 
-    public CIdComponent(Guid id)
+    public CId(Guid id)
     {
         Id = Guid.NewGuid();
     }
