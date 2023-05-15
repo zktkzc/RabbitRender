@@ -12,4 +12,8 @@
     <ProjectReference Include="..\Rabbit-core\Rabbit-Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="GeminiWpf" Version="1.0.60-beta" />
+  </ItemGroup>
+
 </Project>
