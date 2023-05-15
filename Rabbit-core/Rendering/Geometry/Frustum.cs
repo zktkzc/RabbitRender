@@ -67,16 +67,19 @@ namespace Rabbit_core.Rendering.Geometry
         /// <param name="sphere"></param>
         /// <returns></returns>
         public bool IsSphereInFrustum(Sphere sphere) => NearPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
-                FarPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
-                BottomPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
-                TopPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
-                LeftPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
-                RightPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius;
+                                                        FarPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                                                        BottomPlane.DistanceToPlane(sphere.Position) >=
+                                                        -sphere.Radius &&
+                                                        TopPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                                                        LeftPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
+                                                        RightPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius;
 
 
-        public bool IsBoundingSphereInFrustum(Sphere sphere)
+        public bool IsBoundingSphereInFrustum(Quaternion rotation, Vector3 scale, Sphere sphere)
         {
-            return false;
+            float radius = MathHelper.Max(MathHelper.Max(scale.X, scale.Y), scale.Z) * sphere.Radius;
+            Vector3 centerPos = rotation * sphere.Position;
+            return IsSphereInFrustum(new Sphere { Position = centerPos, Radius = radius });
         }
     }
 }
