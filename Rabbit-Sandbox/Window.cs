@@ -3,6 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Rabbit_core.Maths;
 using Rabbit_core.Rendering.Resources;
 
 namespace Rabbit_Sandbox

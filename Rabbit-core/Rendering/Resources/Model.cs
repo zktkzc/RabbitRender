@@ -161,7 +161,7 @@ namespace Rabbit_core.Rendering.Resources
                 }
 
                 Vector3 position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
-                float radius = MathHelper.InverseSqrtFast(meshes.Select(m => Vector3.DistanceSquared(position, m.BoundingSphere.Position)).Max());
+                float radius = MathHelper.Max(Vector3.Distance(position, new Vector3(minX, minY, minZ)), Vector3.Distance(position, new Vector3(maxX, maxY, maxZ)));
                 BoundingSphere = new Sphere
                 {
                     Position = position,
