@@ -3,7 +3,7 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Rabbit_core.Maths;
+using Rabbit_core.ECS.Components;
 using Rabbit_core.Rendering.Resources;
 
 namespace Rabbit_Sandbox
@@ -24,9 +24,14 @@ namespace Rabbit_Sandbox
 
         protected override void OnLoad()
         {
-            _myModel = Model.Create(@"C:\Users\tkzc\Desktop\5.fbx");
+            CTransform c1 = new CTransform(Guid.NewGuid());
+            c1.LocalPosition += new Vector3(0, 0, 1);
+
+            _myModel = Model.Create(
+                @"C:\Users\tkzc\Desktop\LearnOpenGL-master\resources\objects\backpack\backpack.obj");
             _shader = Shader.Create(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl");
-            _texture01 = Texture2D.Create(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\wallhaven-5wwwr7.jpg");
+            _texture01 =
+                Texture2D.Create(@"C:\Users\tkzc\Desktop\LearnOpenGL-master\resources\objects\backpack\diffuse.jpg");
         }
 
         private double _totalTime;
@@ -42,8 +47,8 @@ namespace Rabbit_Sandbox
 
             _shader.Bind();
 
-            _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totalTime * 10))) * Matrix4.CreateRotationX(MathHelper.DegreesToRadians((float)(_totalTime * 10)));
-            _view = Matrix4.LookAt(new Vector3(0, 0, -3), Vector3.Zero, Vector3.UnitY);
+            _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totalTime * 10)));
+            _view = Matrix4.LookAt(new Vector3(0, 0, -10), Vector3.Zero, Vector3.UnitY);
             _perspective = Matrix4.CreatePerspectiveFieldOfView(
                 MathHelper.DegreesToRadians(45),
                 width / height,
