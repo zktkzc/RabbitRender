@@ -1,5 +1,7 @@
 ﻿using Assimp;
+using OpenTK.Mathematics;
 using Rabbit_core.Log;
+using Rabbit_core.Maths;
 using Rabbit_core.Rendering.Geometry;
 
 namespace Rabbit_core.Rendering.Resources
@@ -10,11 +12,13 @@ namespace Rabbit_core.Rendering.Resources
         public List<Mesh> Meshes { get; set; }
         public List<string> MaterialNames { get; }
         public bool IsDestroy { get; private set; } = false;
+        public Sphere BoundingSphere { get; private set; }
 
         private Model(string path)
         {
             Path = path;
             (Meshes, MaterialNames) = LoadModel(path);
+            CreateBoundingShpere(Meshes);
         }
 
         public static Model? Create(string path)
@@ -130,6 +134,41 @@ namespace Rabbit_core.Rendering.Resources
             }
 
             return materialNames;
+        }
+
+        private void CreateBoundingShpere(List<Mesh> meshes)
+        {
+            if (meshes.Count == 1) BoundingSphere = meshes[0].BoundingSphere;
+            else if (meshes.Count > 1)
+            {
+                float minX = float.MaxValue;
+                float minY = float.MaxValue;
+                float minZ = float.MaxValue;
+
+                float maxX = float.MinValue;
+                float maxY = float.MinValue;
+                float maxZ = float.MinValue;
+
+                foreach (var mesh in meshes)
+                {
+                    minX = MathHelper.Min(minX, mesh.BoundingSphere.Position.X - mesh.BoundingSphere.Radius);
+                    minY = MathHelper.Min(minY, mesh.BoundingSphere.Position.Y - mesh.BoundingSphere.Radius);
+                    minZ = MathHelper.Min(minZ, mesh.BoundingSphere.Position.Z - mesh.BoundingSphere.Radius);
+
+                    maxX = MathHelper.Max(maxX, mesh.BoundingSphere.Position.X + mesh.BoundingSphere.Radius);
+                    maxY = MathHelper.Max(maxY, mesh.BoundingSphere.Position.Y + mesh.BoundingSphere.Radius);
+                    maxZ = MathHelper.Max(maxZ, mesh.BoundingSphere.Position.Z + mesh.BoundingSphere.Radius);
+                }
+
+                Vector3 position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
+                float radius = MathHelper.InverseSqrtFast(meshes.Select(m => Vector3.DistanceSquared(position, m.BoundingSphere.Position)).Max());
+                BoundingSphere = new Sphere
+                {
+                    Position = position,
+                    Radius = radius
+                };
+            }
+
         }
 
         public void Dispose()
