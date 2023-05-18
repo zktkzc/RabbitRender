@@ -17,6 +17,7 @@ namespace Rabbit_Sandbox
         private Shader? _shader;
         private Texture2D? _texture01;
         private Model? _myModel;
+        private CCamera _camera;
 
         public Window(int width, int height, string title) : base(GameWindowSettings.Default,
             new NativeWindowSettings() { Size = (width, height), Title = title })
@@ -25,10 +26,14 @@ namespace Rabbit_Sandbox
 
         protected override void OnLoad()
         {
-            CTransform c1 = new CTransform(Guid.NewGuid());
+            _camera = new CCamera(Guid.NewGuid());
+            _transform = new CTransform(Guid.NewGuid());
+            _transform.LocalPosition += new Vector3(0, 0, -10);
+
+            /*CTransform c1 = new CTransform(Guid.NewGuid());
             c1.LocalPosition += new Vector3(1, 1, 1);
             SerializeHelper.Serialize(c1, @"C:\Users\zqzkz\Desktop\a.xml");
-            SerializeHelper.Deserialize(@"C:\Users\zqzkz\Desktop\a.xml", out CTransform? c2);
+            SerializeHelper.Deserialize(@"C:\Users\zqzkz\Desktop\a.xml", out CTransform? c2);*/
 
             _myModel = Model.Create(
                 @"C:\Users\zqzkz\Desktop\LearnOpenGL-master\resources\objects\backpack\backpack.obj");
@@ -39,32 +44,24 @@ namespace Rabbit_Sandbox
 
         private double _totalTime;
         private Matrix4 _model;
-        private Matrix4 _view;
-        private Matrix4 _perspective;
+        private CTransform _transform;
 
         // 每帧进行更新
         protected override void OnRenderFrame(FrameEventArgs args)
         {
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.ClearColor(new Color4(0.2f, 0.3f, 0.3f, 1.0f));
+            GL.ClearColor(_camera.ClearColor);
 
             _shader.Bind();
 
             _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totalTime * 10)));
-            _view = Matrix4.LookAt(new Vector3(0, 0, -10), Vector3.Zero, Vector3.UnitY);
-            _perspective = Matrix4.CreatePerspectiveFieldOfView(
-                MathHelper.DegreesToRadians(45),
-                _width / _height,
-                0.1f,
-                1000f
-            );
 
             _shader.SetUniform("mainTex", 0);
             _texture01.Bind();
-
+            _camera.UpdateMatrices(_transform, _width, _height);
             _shader.SetUniform("model", _model);
-            _shader.SetUniform("view", _view);
-            _shader.SetUniform("perspective", _perspective);
+            _shader.SetUniform("view", _camera.ViewMatrix);
+            _shader.SetUniform("perspective", _camera.PerspectiveMatrix);
 
             foreach (var mesh in _myModel.Meshes)
             {

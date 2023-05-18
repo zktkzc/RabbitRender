@@ -75,13 +75,13 @@ namespace Rabbit_core.Rendering.Resources
         // 创建包围球
         private void CreateBoundingSphere(List<Vertex> vertices)
         {
-            float minX = float.MaxValue;
-            float minY = float.MaxValue;
-            float minZ = float.MaxValue;
+            var minX = float.MaxValue;
+            var minY = float.MaxValue;
+            var minZ = float.MaxValue;
 
-            float maxX = float.MinValue;
-            float maxY = float.MinValue;
-            float maxZ = float.MinValue;
+            var maxX = float.MinValue;
+            var maxY = float.MinValue;
+            var maxZ = float.MinValue;
 
             foreach (var vertex in vertices)
             {
@@ -94,13 +94,9 @@ namespace Rabbit_core.Rendering.Resources
                 maxZ = MathHelper.Max(maxZ, vertex.Position.Z);
             }
 
-            Vector3 position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
-            float radius = MathHelper.InverseSqrtFast(vertices.Select(v => Vector3.DistanceSquared(position, v.Position)).Max());
-            BoundingSphere = new Sphere
-            {
-                Position = position,
-                Radius = radius
-            };
+            var position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
+            var radius = MathHelper.InverseSqrtFast(vertices.Select(v => Vector3.DistanceSquared(position, v.Position)).Max());
+            BoundingSphere = new Sphere(position, radius);
         }
 
         public void Bind()

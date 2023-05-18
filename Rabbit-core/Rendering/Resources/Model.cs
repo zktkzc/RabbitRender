@@ -141,13 +141,13 @@ namespace Rabbit_core.Rendering.Resources
             if (meshes.Count == 1) BoundingSphere = meshes[0].BoundingSphere;
             else if (meshes.Count > 1)
             {
-                float minX = float.MaxValue;
-                float minY = float.MaxValue;
-                float minZ = float.MaxValue;
+                var minX = float.MaxValue;
+                var minY = float.MaxValue;
+                var minZ = float.MaxValue;
 
-                float maxX = float.MinValue;
-                float maxY = float.MinValue;
-                float maxZ = float.MinValue;
+                var maxX = float.MinValue;
+                var maxY = float.MinValue;
+                var maxZ = float.MinValue;
 
                 foreach (var mesh in meshes)
                 {
@@ -160,13 +160,9 @@ namespace Rabbit_core.Rendering.Resources
                     maxZ = MathHelper.Max(maxZ, mesh.BoundingSphere.Position.Z + mesh.BoundingSphere.Radius);
                 }
 
-                Vector3 position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
-                float radius = MathHelper.Max(Vector3.Distance(position, new Vector3(minX, minY, minZ)), Vector3.Distance(position, new Vector3(maxX, maxY, maxZ)));
-                BoundingSphere = new Sphere
-                {
-                    Position = position,
-                    Radius = radius
-                };
+                var position = new Vector3(minX + maxX, minY + maxY, minZ + maxZ) / 2;
+                var radius = MathHelper.Max(Vector3.Distance(position, new Vector3(minX, minY, minZ)), Vector3.Distance(position, new Vector3(maxX, maxY, maxZ)));
+                BoundingSphere = new Sphere(position, radius);
             }
 
         }

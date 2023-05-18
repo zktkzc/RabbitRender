@@ -17,48 +17,19 @@ namespace Rabbit_core.Rendering.Geometry
 
         public void CalculateFrustum(Camera camera, float aspect, Vector3 position, Quaternion rotation)
         {
-            Vector3 front = rotation * Vector3.UnitZ;
-            Vector3 right = rotation * Vector3.UnitX;
-            Vector3 up = rotation * Vector3.UnitY;
-            float halfVSide = camera.Far * (float)MathHelper.Tan(MathHelper.DegreesToRadians(camera.Fov / 2));
-            float halfHSide = halfVSide * aspect;
-            Vector3 frontMulFar = camera.Far * front;
+            var front = rotation * Vector3.UnitZ;
+            var right = rotation * Vector3.UnitX;
+            var up = rotation * Vector3.UnitY;
+            var halfVSide = camera.Far * (float)MathHelper.Tan(MathHelper.DegreesToRadians(camera.Fov / 2));
+            var halfHSide = halfVSide * aspect;
+            var frontMulFar = camera.Far * front;
 
-            NearPlane = new Plane
-            {
-                Position = position + camera.Near * front,
-                Normal = front
-            };
-
-            FarPlane = new Plane
-            {
-                Position = position + camera.Far * front,
-                Normal = -front
-            };
-
-            RightPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(frontMulFar - right * halfHSide, up)
-            };
-
-            LeftPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(up, frontMulFar + right * halfHSide * halfHSide)
-            };
-
-            TopPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(right, up * halfVSide + frontMulFar)
-            };
-
-            BottomPlane = new Plane
-            {
-                Position = position,
-                Normal = Vector3.Cross(frontMulFar - up * halfVSide, right)
-            };
+            NearPlane = new Plane(position + camera.Near * front, front);
+            FarPlane = new Plane(position + camera.Far * front, -front);
+            RightPlane = new Plane(position, Vector3.Cross(frontMulFar - right * halfHSide, up));
+            LeftPlane = new Plane(position, Vector3.Cross(up, frontMulFar + right * halfHSide * halfHSide));
+            TopPlane = new Plane(position, Vector3.Cross(right, up * halfVSide + frontMulFar));
+            BottomPlane = new Plane(position, Vector3.Cross(frontMulFar - up * halfVSide, right));
         }
 
         /// <summary>
@@ -68,8 +39,7 @@ namespace Rabbit_core.Rendering.Geometry
         /// <returns></returns>
         public bool IsSphereInFrustum(Sphere sphere) => NearPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
                                                         FarPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
-                                                        BottomPlane.DistanceToPlane(sphere.Position) >=
-                                                        -sphere.Radius &&
+                                                        BottomPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
                                                         TopPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
                                                         LeftPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius &&
                                                         RightPlane.DistanceToPlane(sphere.Position) >= -sphere.Radius;
@@ -79,7 +49,7 @@ namespace Rabbit_core.Rendering.Geometry
         {
             float radius = MathHelper.Max(MathHelper.Max(scale.X, scale.Y), scale.Z) * sphere.Radius;
             Vector3 centerPos = rotation * sphere.Position;
-            return IsSphereInFrustum(new Sphere { Position = centerPos, Radius = radius });
+            return IsSphereInFrustum(new Sphere(centerPos, radius));
         }
     }
 }

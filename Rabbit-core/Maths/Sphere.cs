@@ -5,9 +5,15 @@ namespace Rabbit_core.Maths
     /// <summary>
     /// 球体
     /// </summary>
-    public struct Sphere
+    public readonly struct Sphere
     {
-        public Vector3 Position;
-        public float Radius;
+        public readonly Vector3 Position;
+        public readonly float Radius;
+
+        public Sphere(Vector3 position, float radius)
+        {
+            Position = position;
+            Radius = radius;
+        }
     }
 }
