@@ -1,19 +1,23 @@
-﻿namespace Rabbit_core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Rabbit_core.ECS.Components;
+
+[DataContract]
 public class CTag : IComponent
 {
-    public Guid Id { get; }
-    public string Tag { get; set; }
+    [DataMember] private Guid _id;
+    public Guid Id => _id;
+    [DataMember] public string Tag { get; set; }
 
     public CTag(Guid id)
     {
-        Id = id;
+        _id = id;
         Tag = "";
     }
 
     public CTag(Guid id, string tag)
     {
-        Id = id;
+        _id = id;
         Tag = tag;
     }
 }

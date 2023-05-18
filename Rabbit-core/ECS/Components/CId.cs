@@ -1,11 +1,15 @@
-﻿namespace Rabbit_core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Rabbit_core.ECS.Components;
+
+[DataContract]
 public class CId : IComponent
 {
-    public Guid Id { get; }
+    public Guid Id => _id;
+    [DataMember] private Guid _id;
 
     public CId(Guid id)
     {
-        Id = Guid.NewGuid();
+        _id = Guid.NewGuid();
     }
 }

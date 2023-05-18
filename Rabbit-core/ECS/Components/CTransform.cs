@@ -1,11 +1,13 @@
-﻿using OpenTK.Mathematics;
+﻿using System.Runtime.Serialization;
+using OpenTK.Mathematics;
 
 namespace Rabbit_core.ECS.Components;
 
+[DataContract]
 public class CTransform : IComponent
 {
-    public Guid Id { get; }
-    
+    public Guid Id => _id;
+
     public Vector3 LocalPosition
     {
         get => GetLocalPosition();
@@ -31,14 +33,22 @@ public class CTransform : IComponent
     public Vector3 LocalForward => _localRotation * Vector3.UnitZ;
     public Vector3 LocalUp => _localRotation * Vector3.UnitY;
     public Vector3 LocalRight => _localRotation * Vector3.UnitX;
-    
+
     public Vector3 WorldForward => WorldRotation * Vector3.UnitZ;
     public Vector3 WorldUp => WorldRotation * Vector3.UnitY;
     public Vector3 WorldRight => WorldRotation * Vector3.UnitX;
 
+    public Matrix4 LocalMatrix
+    {
+        get => GetLocalMatrix();
+        set => SetLocalMatrix(value);
+    }
+
+    public Matrix4 WorldMatrix => GetWorldMatrix();
+
     public CTransform(Guid id)
     {
-        Id = id;
+        _id = id;
 
         _localPosition = new Vector3();
         _localRotation = Quaternion.Identity;
@@ -49,9 +59,10 @@ public class CTransform : IComponent
         _isDirty = false;
     }
 
-    private Vector3 _localPosition;
-    private Quaternion _localRotation;
-    private Vector3 _localScale;
+    [DataMember] private Guid _id;
+    [DataMember] private Vector3 _localPosition;
+    [DataMember] private Quaternion _localRotation;
+    [DataMember] private Vector3 _localScale;
     private Matrix4 _parentMatrix;
     private Matrix4 _localMatrix;
     private Matrix4 _worldMatrix;
@@ -103,7 +114,7 @@ public class CTransform : IComponent
             UpdateMatrices();
         }
         _parentMatrix = transform;
-        _worldMatrix = _parentMatrix * _localMatrix;
+        _worldMatrix = _parentMatrix * LocalMatrix;
     }
 
     /// <summary>
@@ -125,7 +136,7 @@ public class CTransform : IComponent
 
     public Matrix4 GetLocalMatrix()
     {
-        if (_isDirty)UpdateMatrices();
+        if (_isDirty) UpdateMatrices();
         return _localMatrix;
     }
 
@@ -134,13 +145,13 @@ public class CTransform : IComponent
         if (_isDirty) UpdateMatrices();
         return _worldMatrix.ExtractTranslation();
     }
-    
+
     public Quaternion GetWorldRotation()
     {
         if (_isDirty) UpdateMatrices();
         return _worldMatrix.ExtractRotation();
     }
-    
+
     public Vector3 GetWorldScale()
     {
         if (_isDirty) UpdateMatrices();
@@ -152,5 +163,27 @@ public class CTransform : IComponent
         _localPosition = _localMatrix.ExtractTranslation();
         _localRotation = _localMatrix.ExtractRotation();
         _localScale = _localMatrix.ExtractScale();
+        _isDirty = false;
+    }
+
+    [OnSerializing]
+    public void OnSerializing(StreamingContext context)
+    {
+
+    }
+
+    [OnSerialized]
+    public void OnSerialized(StreamingContext context)
+    {
+
+    }
+
+    [OnDeserializing]
+    public void OnDeserializing(StreamingContext context) { }
+
+    [OnDeserialized]
+    public void OnDeserialized(StreamingContext context)
+    {
+        UpdateMatrices();
     }
 }

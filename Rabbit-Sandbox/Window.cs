@@ -5,6 +5,7 @@ using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Rabbit_core.ECS.Components;
 using Rabbit_core.Rendering.Resources;
+using Rabbit_core.Tools;
 
 namespace Rabbit_Sandbox
 {
@@ -25,13 +26,15 @@ namespace Rabbit_Sandbox
         protected override void OnLoad()
         {
             CTransform c1 = new CTransform(Guid.NewGuid());
-            c1.LocalPosition += new Vector3(0, 0, 1);
+            c1.LocalPosition += new Vector3(1, 1, 1);
+            SerializeHelper.Serialize(c1, @"C:\Users\zqzkz\Desktop\a.xml");
+            SerializeHelper.Deserialize(@"C:\Users\zqzkz\Desktop\a.xml", out CTransform? c2);
 
             _myModel = Model.Create(
-                @"C:\Users\tkzc\Desktop\LearnOpenGL-master\resources\objects\backpack\backpack.obj");
-            _shader = Shader.Create(@"E:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl");
+                @"C:\Users\zqzkz\Desktop\LearnOpenGL-master\resources\objects\backpack\backpack.obj");
+            _shader = Shader.Create(@"D:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl");
             _texture01 =
-                Texture2D.Create(@"C:\Users\tkzc\Desktop\LearnOpenGL-master\resources\objects\backpack\diffuse.jpg");
+                Texture2D.Create(@"C:\Users\zqzkz\Desktop\LearnOpenGL-master\resources\objects\backpack\diffuse.jpg");
         }
 
         private double _totalTime;

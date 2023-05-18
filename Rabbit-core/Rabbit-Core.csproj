@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <Folder Include="ECS\Systems\" />
+    <Folder Include="Tools\" />
   </ItemGroup>
 
 </Project>

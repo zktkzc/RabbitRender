@@ -1,19 +1,23 @@
-﻿namespace Rabbit_core.ECS.Components;
+﻿using System.Runtime.Serialization;
 
+namespace Rabbit_core.ECS.Components;
+
+[DataContract]
 public class CSelfActive : IComponent
 {
-    public Guid Id { get; }
-    public bool IsSelfActive { get; set; }
+    public Guid Id => _id;
+    [DataMember] public bool IsSelfActive { get; set; }
+    [DataMember] private Guid _id;
 
     public CSelfActive(Guid id)
     {
-        Id = id;
+        _id = id;
         IsSelfActive = true;
     }
-    
+
     public CSelfActive(Guid id, bool isSelfActive)
     {
-        Id = id;
+        _id = id;
         IsSelfActive = isSelfActive;
     }
 }
