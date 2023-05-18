@@ -1,6 +1,7 @@
 ﻿using System.Runtime.Serialization;
 using OpenTK.Mathematics;
 using Rabbit_core.Rendering;
+using Rabbit_core.Rendering.Enums;
 
 namespace Rabbit_core.ECS.Components;
 
@@ -58,6 +59,13 @@ public class CCamera : IComponent
     {
         get => _camera.IsFrustumLightCulling;
         set => _camera.IsFrustumLightCulling = value;
+    }
+
+    [DataMember]
+    public EProjectionMode ProjectionMode
+    {
+        get => _camera.ProjectionMode;
+        set => _camera.ProjectionMode = value;
     }
 
     public Matrix4 ViewMatrix => _camera.ViewMatrix;

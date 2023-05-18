@@ -4,6 +4,7 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Rabbit_core.ECS.Components;
+using Rabbit_core.Rendering.Buffers;
 using Rabbit_core.Rendering.Resources;
 using Rabbit_core.Tools;
 
@@ -18,6 +19,7 @@ namespace Rabbit_Sandbox
         private Texture2D? _texture01;
         private Model? _myModel;
         private CCamera _camera;
+        private UniformBufferObject _ubo;
 
         public Window(int width, int height, string title) : base(GameWindowSettings.Default,
             new NativeWindowSettings() { Size = (width, height), Title = title })
@@ -26,9 +28,10 @@ namespace Rabbit_Sandbox
 
         protected override void OnLoad()
         {
+            _ubo = new UniformBufferObject(1024, 0);
             _camera = new CCamera(Guid.NewGuid());
             _transform = new CTransform(Guid.NewGuid());
-            _transform.LocalPosition += new Vector3(0, 0, -10);
+            _transform.LocalPosition += new Vector3(0, 0, -5);
 
             /*CTransform c1 = new CTransform(Guid.NewGuid());
             c1.LocalPosition += new Vector3(1, 1, 1);
@@ -40,6 +43,8 @@ namespace Rabbit_Sandbox
             _shader = Shader.Create(@"D:\Project\C\C#\Rabbit-core\Rabbit-Sandbox\Test.glsl");
             _texture01 =
                 Texture2D.Create(@"C:\Users\zqzkz\Desktop\LearnOpenGL-master\resources\objects\backpack\diffuse.jpg");
+
+            UniformBufferObject.BindingPointToShader(_shader!, "EngineUbo", 0);
         }
 
         private double _totalTime;
@@ -52,18 +57,18 @@ namespace Rabbit_Sandbox
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(_camera.ClearColor);
 
-            _shader.Bind();
+            _shader!.Bind();
 
             _model = Matrix4.CreateRotationY(MathHelper.DegreesToRadians((float)(_totalTime * 10)));
 
             _shader.SetUniform("mainTex", 0);
-            _texture01.Bind();
+            _texture01!.Bind();
             _camera.UpdateMatrices(_transform, _width, _height);
-            _shader.SetUniform("model", _model);
-            _shader.SetUniform("view", _camera.ViewMatrix);
-            _shader.SetUniform("perspective", _camera.PerspectiveMatrix);
+            _ubo.SetData(_model, 0);
+            _ubo.SetData(_camera.ViewMatrix, 16 * 4);
+            _ubo.SetData(_camera.PerspectiveMatrix, 16 * 4 * 2);
 
-            foreach (var mesh in _myModel.Meshes)
+            foreach (var mesh in _myModel!.Meshes)
             {
                 mesh.Bind();
                 GL.Enable(EnableCap.DepthTest);
